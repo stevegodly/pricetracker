@@ -5,6 +5,7 @@ import type { Metadata } from 'next'
 import { Inter, Space_Grotesk } from 'next/font/google'
 import AuthProvider from '@/components/AuthProvider'
 
+
 const inter = Inter({ subsets: ['latin'] })
 const spaceGrotesk = Space_Grotesk({ 
   subsets: ['latin'], 
@@ -12,8 +13,8 @@ const spaceGrotesk = Space_Grotesk({
  })
 
 export const metadata: Metadata = {
-  title: 'Pricewise',
-  description: 'Track product prices effortlessly and save money on your online shopping.',
+  title: 'PriceTracker',
+  description: 'Track Amazon product prices effortlessly and save money.',
 }
 
 export default function RootLayout({
@@ -25,8 +26,8 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <AuthProvider>
-        <ProductContextProvider>
-            <main className="max-w-10xl mx-auto">
+          <ProductContextProvider>
+            <main className="w-screen mx-auto" >
               <Navbar />
               {children}
             </main>

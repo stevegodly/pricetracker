@@ -2,16 +2,16 @@ import HeroCarousel from "@/components/HeroCarousel"
 import Searchbar from "@/components/Searchbar"
 import Image from "next/image"
 import { getAllProducts } from "@/lib/actions"
-import ProductCard from "@/components/ProductCard"
+import bgi from '@/public/assets/images/bgi.jpg'
 
 const Home = async () => {
   const allProducts = await getAllProducts();
 
   return (
     <>
-      <section className="px-6 md:px-20 py-24">
-        <div className="flex max-xl:flex-col gap-16">
-          <div className="flex flex-col justify-center"> 
+      <section className="px-6  md:px-20 py-24" style={{ backgroundImage:`url(${bgi.src})`}} >
+        <div className="flex items-center max-xl:flex-col gap-16">
+          <div className="flex flex-col h-2/6 justify-center backdrop-blur-md bg-white/80"> 
             <p className="small-text">
               Smart Shopping Starts Here:
               <Image 
@@ -23,8 +23,8 @@ const Home = async () => {
             </p>
 
             <h1 className="head-text">
-              Unleash the Power of
-              <span className="text-primary"> PriceWise</span>
+              Track Product Prices with 
+              <span className="text-primary"> PriceTracker</span>
             </h1>
 
             <p className="mt-6">
