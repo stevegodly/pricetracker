@@ -35,21 +35,12 @@ export async function getAllProducts() {
 }
 
 
-export async function addUserEmailToProduct(product: product, userEmail: string) {
+export async function addUserEmailToProduct(product: product, userEmail: string[]) {
   try {
-    if(product.email){
-      connectToDB();
-        product = {
-          ...product,
-          email : userEmail,
-        }
-
-      const newProduct = await Product.create(
-        product
-      );
-      const emailProduct={title:newProduct.title,url:newProduct.link};
+    if(userEmail){
+      const emailProduct={title:product.title,url:product.link};
       const emailContent=await generateEmailBody(emailProduct,"WELCOME");
-      await sendEmail(emailContent,newProduct.email)
+      await sendEmail(emailContent,userEmail)
     }    
     revalidatePath(`/products`);
   }

@@ -141,7 +141,7 @@ const ProductDetails = ()=> {
             </div>
           </div>
 
-          <Modal />
+          <Modal product={product}/>
         </div>
       </div>
 

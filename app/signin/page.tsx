@@ -1,69 +1,87 @@
 'use client';
-import {signIn} from "next-auth/react";
-import Image from "next/image";
-import {FormEvent,useState} from "react";
-import Register from '@/components/Register'
+import {useEffect,useContext,useState} from "react";
+import {UserContext} from '@/components/UserContext'
+import axios from "axios";
+import { useSnackbar } from 'notistack';
 
-export default function LoginPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [loginInProgress, setLoginInProgress] = useState(false);
-  const [registerLogin,setRegisterLogin]=useState('login')
 
-  async function handleFormSubmit(ev:FormEvent<HTMLFormElement>) {
-    ev.preventDefault();
-    setLoginInProgress(true);
+const LoginRegister=()=>{
+    useEffect(() => {
+        setTimeout(()=>{
+            setLoading(false)
+        },3000)
+    },[])
 
-    await signIn('credentials', {email, password, callbackUrl: '/products'});
+    const [username,setUsername]=useState('')
+    const [password,setPassword]=useState('')
+    const [loading,setLoading]=useState(true)
+    const [registerLogin,setRegisterLogin]=useState('login')
+    const {setUsername:setLoggedInUsername,setId}=useContext(UserContext)
+    const { enqueueSnackbar } = useSnackbar();
 
-    setLoginInProgress(false);
-  }
-  return (
-    <>
-      {registerLogin === "register" ? (
-        <Register />
-      ) : (
-        <section className="mt-8">
-          <h1 className="text-center text-primary text-4xl mb-4">Login</h1>
-          <form className="max-w-xs mx-auto" onSubmit={handleFormSubmit}>
-            <input
-              type="email"
-              name="email"
-              placeholder="Email"
-              value={email}
-              disabled={loginInProgress}
-              onChange={ev => setEmail(ev.target.value)}
-            />
-            <input
-              type="password"
-              name="password"
-              placeholder="Password"
-              value={password}
-              disabled={loginInProgress}
-              onChange={ev => setPassword(ev.target.value)}
-            />
-            <button type="submit" disabled={loginInProgress}>
-              {loginInProgress ? "Logging in..." : "Login"}
-            </button>
-            <div className="my-4 text-center text-gray-500">or login with provider</div>
-            <button
-              type="button"
-              disabled={loginInProgress}
-              onClick={() => signIn('google', { callbackUrl: '/products' })}
-              className="flex gap-4 justify-center"
-            >
-              <Image src="/google.png" alt="" width={24} height={24} />
-              Login with Google
-            </button>
-            <div>
-                Dont have an account?
-                <button className="ml-1" onClick={() => setRegisterLogin('register')}>
-                  Register
+    const handleSubmit=async()=>{
+        try{
+            const user={
+                username:username,
+                password:password,
+            }
+            const url = (registerLogin === 'register' ? 'register' : 'login');
+            const {data}=await axios.post(`https://messagewebapp.onrender.com/api/v1/chats/${url}`,user)
+            setLoggedInUsername(username);
+            setId(data.id);
+            enqueueSnackbar(`${url}ed successfully`, { variant: 'success' });
+        }
+        catch(err){
+            enqueueSnackbar('Error: '+err.message, { variant:'error'})
+            console.log(err)
+        }
+    }
+    return(
+        <div className='p-4 bg-gradient-to-r from-slate-800 to-cyan-700 h-screen'>
+            {loading ? <Loading /> : ''}
+            <div className='flex flex-col border-2 border-sky-400 rounded-xl w-[600px] p-4 mx-auto'>
+                <div className='my-4'>
+                    <label className='text-xl mr-4 text-gray-200 font-extrabold'>User-Name</label>
+                    <input
+                        type='text'
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        className='border-2 border-gray-200 px-4 py-2 w-full bg-slate-400'
+                    />
+                </div>
+                <div className='my-4'>
+                    <label className='text-xl mr-4 text-gray-200 font-extrabold'>Password</label>
+                    <input
+                        type='text'
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        className='border-2 border-gray-200 px-4 py-2  w-full bg-slate-400'
+                    />
+                </div>
+                <button className='p-2 bg-sky-300 m-8' onClick={handleSubmit}>
+                    {registerLogin==='login'?'Login':'Register'}
                 </button>
+                <div className="text-center mt-2">
+                    {registerLogin === 'register' && (
+                        <div>
+                            Already a member?
+                            <button className="ml-1" onClick={() => setRegisterLogin('login')}>
+                                Login here
+                            </button>
+                        </div>
+                    )}
+                    {registerLogin === 'login' && (
+                        <div>
+                            Dont have an account?
+                            <button className="ml-1" onClick={() => setRegisterLogin('register')}>
+                                Register
+                            </button>
+                        </div>
+                    )}
+                </div>
             </div>
-          </form>
-        </section>
-      )}
-    </>
-  );
+        </div>     
+    )
 }
+
+export default LoginRegister;
